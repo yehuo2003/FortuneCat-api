@@ -11,9 +11,9 @@ USE FortuneCat;
 
 #创建管理员信息表cat_admin
 CREATE TABLE cat_admin(
-	aid TINYINT PRIMARY KEY AUTO_INCREMENT,	#管理员编号
-	aname VARCHAR(16) NOT NULL DEFAULT '',	#管理员用户名
-	apwd  VARCHAR(64) NOT NULL DEFAULT '' 	#管理员密码
+	aid INT PRIMARY KEY AUTO_INCREMENT,	  #管理员编号
+	aname VARCHAR(32) UNIQUE, 						#管理员用户名
+	apwd  VARCHAR(64) NOT NULL DEFAULT '' #管理员密码
 );
 
 #插入管理员信息表信息
@@ -24,25 +24,25 @@ INSERT INTO cat_admin VALUES
 
 #项目全局设置表
 CREATE TABLE cat_settings(
-	sid TINYINT PRIMARY KEY AUTO_INCREMENT,	#编号
-	appName VARCHAR(32),										#应用/店家名称
-	apiUrl VARCHAR(64),											#数据API子系统地址
-	adminUrl VARCHAR(64),										#管理后台子系统地址
-	appUrl VARCHAR(64),											#顾客App子系统地址
-	icp VARCHAR(64),												#系统备案号
-	copyright VARCHAR(128)									#系统版权声明
+	sid INT PRIMARY KEY AUTO_INCREMENT,	#编号
+	appName VARCHAR(32),								#应用/店家名称
+	apiUrl VARCHAR(64),									#数据API子系统地址
+	adminUrl VARCHAR(64),								#管理后台子系统地址
+	appUrl VARCHAR(64),									#顾客App子系统地址
+	icp VARCHAR(64),										#系统备案号
+	copyright VARCHAR(128)							#系统版权声明
 );
 
 #插入全局信息
 INSERT INTO cat_settings VALUES
-(NULL, '招财猫', 'http://127.0.0.1:8090', 'http://127.0.0.1:8091', 'http://127.0.0.1:8092', '深ICP备12003709号-3', 'Copyright © 深圳市野火科技有限公司版权所有');
+(NULL, '招财猫', 'http://127.0.0.1:8090', 'http://127.0.0.1:8091', 'http://127.0.0.1:8092', '深ICP备12003709号-2', 'Copyright © 深圳市野火科技有限公司版权所有');
 
 #桌台信息表
 CREATE TABLE cat_table(
   tid INT PRIMARY KEY AUTO_INCREMENT,#桌台编号
-  tname VARCHAR(32),#桌台昵称（可空）
-  type VARCHAR(32),#桌台类型 如3-4人桌
-  status INT  #当前状态 1-空闲 2-预定 3-占用 0-其它
+  tname VARCHAR(32),								 #桌台昵称（可空）
+  type VARCHAR(32),	 #桌台类型 如3-4人桌
+  status INT 				 #当前状态 1-空闲 2-预定 3-占用 0-其它
 );
 
 #插入桌台信息
@@ -61,14 +61,14 @@ INSERT INTO cat_table VALUES
 (13, '高升阁', '4人桌', 3),
 (15, '乐逍遥', '2人桌',3);
 
-#桌台预定表
+#桌台预定信息表
 CREATE TABLE cat_reservation(
 	rid INT PRIMARY KEY AUTO_INCREMENT,	#信息编号
 	contactName VARCHAR(32),						#联系人姓名
 	phone CHAR(11),											#联系电话
 	contactTime BIGINT,									#联系时间
 	dinnerTime BIGINT,									#预约用餐时间
-  tableId INT,
+  tableId INT,												#预定的桌号
   FOREIGN KEY(tableId) REFERENCES cat_table(tid)
 );
 
@@ -76,26 +76,26 @@ CREATE TABLE cat_reservation(
 INSERT INTO cat_reservation VALUES
 (NULL,'林主明',13666990716,'1548311700000', '1549011000000','1'),
 (NULL, '丁丁', '13501234561', '1548311700000', '1549011000000', '1'),
-(NULL, '当当', '13501234562', '1548311710000', '1549011100000', '1'),
+(NULL, '汤姆', '13501234562', '1548311710000', '1549011100000', '1'),
 (NULL, '豆豆', '13501234563', '1548311720000', '1549011200000', '2'),
-(NULL, '丫丫', '13501234564', '1548311730000', '1549011300000', '2'),
+(NULL, '汤姆', '13501234564', '1548311730000', '1549011300000', '2'),
 (NULL, '丁丁', '13501234565', '1548311740000', '1549011400000', '3'),
 (NULL, '当当', '13501234566', '1548311750000', '1549011500000', '3'),
-(NULL, '豆豆', '13501234561', '1548311760000', '1549011600000', '5'),
-(NULL, '丫丫', '13501234562', '1548311770000', '1549011700000', '5'),
-(NULL, '丁丁', '13501234563', '1548311780000', '1549011800000', '6'),
+(NULL, '汤姆', '13501234561', '1548311760000', '1549011600000', '5'),
+(NULL, '杰瑞', '13501234562', '1548311770000', '1549011700000', '5'),
+(NULL, '汤姆', '13501234563', '1548311780000', '1549011800000', '6'),
 (NULL, '当当', '13501234564', '1548311790000', '1549011900000', '6'),
-(NULL, '豆豆', '13501234565', '1548311800000', '1549011000000', '7'),
+(NULL, '杰瑞', '13501234565', '1548311800000', '1549011000000', '7'),
 (NULL, '丫丫', '13501234566', '1548311810000', '1549011100000', '8'),
 (NULL, '豆豆', '13501234567', '1548311820000', '1549011200000', '9'),
-(NULL, '丫丫', '13501234561', '1548311840000', '1549011300000', '10'),
+(NULL, '张三', '13501234561', '1548311840000', '1549011300000', '10'),
 (NULL, '丁丁', '13501234562', '1548311850000', '1549011400000', '10'),
-(NULL, '当当', '13501234563', '1548311860000', '1549011500000', '11'),
+(NULL, '张三', '13501234563', '1548311860000', '1549011500000', '11'),
 (NULL, '豆豆', '13501234564', '1548311870000', '1549011600000', '11'),
-(NULL, '丫丫', '13501234565', '1548311880000', '1549011600000', '12'),
+(NULL, '张三', '13501234565', '1548311880000', '1549011600000', '12'),
 (NULL, '豆豆', '13501234566', '1548311890000', '1549011500000', '13'),
 (NULL, '当当', '13501234567', '1548311900000', '1549011300000', '13'),
-(NULL, '丫丫', '13501234568', '1548311910000', '1549011200000', '15');
+(NULL, '张三', '13501234568', '1548311910000', '1549011200000', '15');
 
 #菜品类别表
 CREATE TABLE cat_category(
@@ -118,7 +118,7 @@ CREATE TABLE cat_dish(
 	imgUrl VARCHAR(128),								#图片地址
 	price DECIMAL(6,2),									#价格
 	detail VARCHAR(128),								#详细描述
-	categoryId Int,											#所属类别
+	categoryId INT,											#所属类别
 	FOREIGN KEY(categoryId) REFERENCES cat_category(cid)
 );
 
