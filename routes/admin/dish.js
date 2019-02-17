@@ -64,11 +64,36 @@ function randFileName(suffix) {
   var time = new Date().getTime();
   var num = Math.floor(Math.random() * (10000 - 1000) + 1000); //4位随机数字
   return time + '-' + num + suffix;
-}
+};
 
 /*
 *POST /admin/dish
+*请求参数：{title:'xx',imgUrl:'..jpg',price:xx,detail:'xx',categoryId:xx}
 *添加一个新的菜品
+*输出消息：
+* {code:200, msg:'dish added succ',dishId:46}
+*/
+router.post('/', (req, res) => {
+  pool.query('INSERT INTO cat_dish SET ?', req.body, (err, result) => {
+    if (err) throw err;
+    res.send({ code: 200, msg: 'dish added succ', dishId: result.insertId }) //将INSERT语句产生的自增编号输出给客户端
+  })
+});
+
+/*
+*DELETE /admin/dish/:did
+*根据指定的菜品编号删除该菜品
+*输出数据：
+* {code:200, msg:'dish added succ',dishId:46}
+*/
+
+/*
+*PUT /admin/dish
+*请求参数：{did:'xx',title: 'xx',imgUrl:'..jpg',price:xx,detail:'xx',categoryId:xx}
+*根据指定的菜品编号修改菜品
+*输出数据：
+* {code:200, msg:'dish updated succ'}
+* {code:400, msg:'dish not exists'}
 */
 
 module.exports = router;

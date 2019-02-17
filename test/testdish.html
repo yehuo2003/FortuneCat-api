@@ -12,6 +12,14 @@
   <button id="bt1">查询所有菜品</button>
   <button id="bt2">修改管理员密码</button>
 
+  <hr>
+  <input type="text" id="inputDesc">
+  <input type="file" id="inputFile">
+  <button id="bt3" type="button">异步上传菜品图片</button>
+  <hr>
+
+  <button id="bt4">插入菜品</button>
+
   <h3>文件上传</h3>
   <form action="http://127.0.0.1:8090/admin/dish/image" method="POST" enctype="multipart/form-data">
     <input type="file" name="dishImg"><br>
@@ -42,6 +50,38 @@
         console.log(err);
       })
     };
+
+    bt3.onclick = function () {
+      // 异步上传文件
+      // 手工创建一个multipart/form-data形式的请求主体
+      var data = new FormData();
+      // 向请求主体中追加要提交的数据
+      data.append('description', inputDesc.value);
+      // 向请求主体中追加用户选中的文件
+      // console.dir(inputFile);
+      data.append('dishImg', inputFile.files[0]);
+      // 使用axios将请求主体异步提交给服务器
+      axios.post('http://127.0.0.1:8090/admin/dish/image', data).then((res) => {
+        console.log(res.data);
+      }).catch((err) => {
+        console.log(err);
+      })
+    }
+
+    bt4.onclick = function () {
+      var data = {
+        title: '小烧饼',
+        imgUrl: '123456.jpg',
+        price: 35,
+        detail: '小烧饼的详情介绍',
+        categoryId: 3
+      }
+      axios.post('http://127.0.0.1:8090/admin/dish', data).then((res) => {
+        console.log(res.data);
+      }).catch((err) => {
+        console.log(err);
+      })
+    }
   </script>
 </body>
 
