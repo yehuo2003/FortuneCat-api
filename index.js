@@ -6,6 +6,8 @@ const cors = require('cors');
 const category = require('./routes/admin/category');
 const admin = require('./routes/admin/admin');
 const dish = require('./routes/admin/dish');
+const settings = require('./routes/admin/settings');
+const table = require('./routes/admin/table');
 
 // 创建HTTP应用服务器
 const app = express();
@@ -22,3 +24,5 @@ app.use(bodyParser.json());//把application/json格式的请求主体数据解�
 app.use('/admin/category', category);
 app.use('/admin', admin);
 app.use('/admin/dish', dish);
+app.use('/admin/settings', settings);
+app.use('/admin/table', table);
