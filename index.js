@@ -15,6 +15,9 @@ app.listen(PORT, () => {
   console.log(`Server Listening: ${PORT}... `);
 });
 
+// 托管静态文件-图片
+app.use(express.static(__dirname + "/img"));
+
 // 配置中间件
 app.use(cors());
 // app.use(bodyParser.urlencoded({}));//把application/x-www-form-urlencoded格式的请求主体数据解析出来放入req.body属性

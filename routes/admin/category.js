@@ -52,10 +52,10 @@ router.post('/', (req, res) => {
   pool.query('INSERT INTO cat_category SET ?', data, (err, result) => {
     if (err) throw err;
     res.send({ 
-			code: 200,
-			msg: '1 category added',
-			cid: result.insertId		
-		});
+	  code: 200,
+	  msg: '1 category added',
+	  cid: result.insertId		
+	});
   })
 })
 
@@ -66,7 +66,6 @@ router.post('/', (req, res) => {
 */
 router.put('/', (req, res) => {
   var data = req.body; //请求数据{cid:xx,cname:'xx'}
-  console.log(data)
   // TODO: 此处可以对数据进行验证
   pool.query('UPDATE cat_category SET ? WHERE cid=?', [data, data.cid], (err, result) => {
     if (err) throw err;

@@ -10,11 +10,40 @@
 
 <body>
   <button id="bt1">获取桌台信息</button>
+  <button id="bt3">新增桌台</button>
+  <button id="bt4">修改桌台</button>
+  <button id="bt5">删除桌台</button>
   <button id="bt2">修改全局设置信息</button>
   <script src="./axios.min.js"></script>
   <script>
     bt1.onclick = function () {
       axios.get('http://127.0.0.1:8090/admin/table').then((result) => {
+        console.log(result.data);
+      }).catch((err) => {
+        console.log(err);
+      })
+    };
+	
+	bt3.onclick = function () {
+	  var data = { tname: '测试桌台', type: "4人桌", status: 1};	
+      axios.post('http://127.0.0.1:8090/admin/table', data).then((result) => {
+        console.log(result.data);
+      }).catch((err) => {
+        console.log(err);
+      })
+    };
+
+	bt4.onclick = function () {
+	  var data = { tid: 16, tname: '测试桌台2', type: "2人桌", status: 1};	
+      axios.put('http://127.0.0.1:8090/admin/table', data).then((result) => {
+        console.log(result.data);
+      }).catch((err) => {
+        console.log(err);
+      })
+    };
+
+	bt5.onclick = function () {
+      axios.delete('http://127.0.0.1:8090/admin/table/16').then((result) => {
         console.log(result.data);
       }).catch((err) => {
         console.log(err);

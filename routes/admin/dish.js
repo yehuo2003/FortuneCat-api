@@ -14,6 +14,7 @@ const router = express.Router();
 * ]
 */
 router.get('/', (req, res) => {
+/*
   // 为了获得所有菜品，必须先查询所有菜品类别
   pool.query('SELECT cid,cname FROM cat_category ORDER BY cid', (err, result) => {
     if (err) throw err;
@@ -31,6 +32,97 @@ router.get('/', (req, res) => {
       })
     }
   })
+*/
+
+//	做分页效果
+  var curPage = Number(req.query.curPage);  //当前页码
+  var pageSize = Number(req.query.pageSize);//页大小
+  var categoryId = req.query.categoryId;	//菜品类别id
+  var title = req.query.title;	//菜品名称
+  var sort = req.query.sort;
+  //2.设置参数默认值
+  if (!curPage) {
+    curPage = 1;
+  }
+  if (!pageSize) {
+    pageSize = 10;
+  }
+  //3.验证用户输入
+  var reg = /^[0-9]{1,}$/;
+  if (!reg.test(curPage)) {
+    res.send({ code: -1, msg: "页码格式不正确" });
+    return;
+  }
+  if (!reg.test(pageSize)) {
+    res.send({ code: -2, msg: "页大小格式不正确" });
+    return;
+  }
+  var progress = 0;
+  var obj = { code: 1 };
+
+  //4.创建两条sql发送 总记录数
+  //4.1创建空对象保存返回数据
+  var obj = { pageSize };
+  //4.2创建变量保存(sql语句完成)进度
+  var progress = 0;
+    //查询功能 提供菜品类别 和 按菜品搜索
+  var category = "";
+  if (categoryId && title) {
+	category = `WHERE categoryId=${categoryId} and title like "%${title}%"`
+  } else if (categoryId) {
+	category = `WHERE categoryId=${categoryId}`
+  } else if (title) {
+	category = `WHERE title like "%${title}%"`
+  }
+  var sql = " SELECT count(did) AS c FROM cat_dish " + category;
+  pool.query(sql, (err, result) => {
+    if (err) throw err;
+    var pageCount = Math.ceil(result[0].c / pageSize);
+    obj.pageCount = pageCount;//保存总页数
+	obj.total = result[0].c;  //保存总条数	
+    progress += 50;           //保存当前进度
+    if (progress == 100) {      //二条sql完成
+      res.send({ code: 200, data: obj })//发送结果
+    }
+  })
+
+  //5.创建第二条sql语句 当前页内容
+  if (sort == 1) {
+    //如果sort等于1，执行价格升序
+    var sql = ` SELECT did,title,price,categoryId FROM cat_dish ${category} ORDER BY price ASC LIMIT ?,?`;
+  } else if (sort == 2) {
+    //如果sort等于2，按价格降序
+    var sql = " SELECT did,title,price,categoryId FROM cat_dish ORDER BY price ASC LIMIT ?,?";
+  } else {
+	//默认按id降序(最新添加在放在前边)	
+    var sql = ` SELECT did,title,price,categoryId FROM cat_dish ${category} ORDER BY did DESC LIMIT ?,?`;
+  }
+  var offset = parseInt((curPage - 1) * pageSize);
+  pageSize = parseInt(pageSize);
+  pool.query(sql, [offset, pageSize], (err, result) => {
+    if (err) throw err;
+    obj.data = result;     //保存当前页内容
+    progress += 50;     //进度加50
+    if (progress == 100) {//如果二条sql语句全部完成
+      //6.将数据json发送
+      res.send({ code: 200, data: obj })
+    }
+  })
+})
+
+/*
+*GET /admin/dish/:did
+*请求参数：
+*根据菜品id, 查询出对应的菜品
+*/
+router.get('/:did', (req, res) => {
+	var did = req.params.did
+    pool.query('SELECT did,title,price,detail,imgUrl,categoryId FROM cat_dish WHERE did=?', did, (err, result) => {
+		if (err) throw err;
+		if (result.length) {
+			res.send(result[0]);
+		}
+    })
 })
 
 /*
@@ -53,7 +145,7 @@ router.post('/image', upload.single('dishImg'), (req, res) => {
   var suffix = req.file.originalname.substring(req.file.originalname.lastIndexOf('.')) //原始文件名中的后缀部分
   var newFile = randFileName(suffix); //目标文件名
   fs.rename(tmpFile, 'img/dish/' + newFile, () => {
-    res.send({ code: 200, msg: 'upload succ', fileName: newFile }) //把临时文件转移
+    res.send({ code: 200, msg: 'upload img succ', fileName: newFile }) //把临时文件转移
   })
 });
 
@@ -86,6 +178,18 @@ router.post('/', (req, res) => {
 *输出数据：
 * {code:200, msg:'dish added succ',dishId:46}
 */
+router.delete('/:did', (req, res) => {
+  var did = req.params.did
+  pool.query('DELETE FROM cat_dish WHERE did=?', did, (err, result) => {
+    if (err) throw err;
+    // 获取DELETE语句在数据库中影响的行数
+    if (result.affectedRows > 0) {
+      res.send({ code: 200, msg: 'dish added succ' });
+    } else {
+      res.send({ code: 400, msg: '0 dish deleted' });
+    }
+  })
+})
 
 /*
 *PUT /admin/dish
@@ -95,5 +199,18 @@ router.post('/', (req, res) => {
 * {code:200, msg:'dish updated succ'}
 * {code:400, msg:'dish not exists'}
 */
+router.put('/', (req, res) => {
+  var data = req.body;
+  pool.query('UPDATE cat_dish SET ? WHERE did=?', [data, data.did], (err, result) => {
+    if (err) throw err;
+    if (result.changedRows > 0) { //实际更新了一行
+      res.send({ code: 200, msg: 'dish updated succ' });
+    } else if (result.affectedRows == 0) {
+      res.send({ code: 400, msg: 'dish not exists' });
+    } else if (result.affectedRows == 1 && result.changedRows == 0) { //影响到1行，但是修改了0行——新值与旧值完全一样
+      res.send({ code: 401, msg: 'no dish modified' });
+    }
+  })
+});
 
 module.exports = router;

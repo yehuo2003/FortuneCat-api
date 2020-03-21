@@ -4,16 +4,16 @@ const pool = require('../../pool');
 const router = express.Router();
 
 /*
-*API: GET /admin/login
+*API: POST /admin/login
 *请求数据：{aname: 'xxx', apwd: 'xxx'}
 *完成用户登录验证
 *返回数据：
 * {code: 200,msg: 'login succ'}
 * {code: 400,msg: 'aname or apwd err'}
 */
-router.get('/login/:aname/:apwd', (req, res) => {
-  var aname = req.params.aname;
-  var apwd = req.params.apwd;
+router.post('/', (req, res) => {
+  var aname = req.body.aname;
+  var apwd = req.body.apwd;
   // 需要对用户输入的密码执行加密函数
   pool.query('SELECT aid FROM cat_admin WHERE aname=? AND apwd=PASSWORD(?)', [aname, apwd], (err, result) => {
     if (err) throw err;

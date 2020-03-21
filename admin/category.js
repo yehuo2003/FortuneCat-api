@@ -52,10 +52,10 @@ router.post('/', (req, res) => {
   pool.query('INSERT INTO cat_category SET ?', data, (err, result) => {
     if (err) throw err;
     res.send({ 
-			code: 200,
-			msg: '1 category added',
-			cid: result.insertId		
-		});
+	  code: 200,
+	  msg: '1 category added',
+	  cid: result.insertId		
+	});
   })
 })
 
